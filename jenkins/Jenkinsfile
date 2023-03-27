@@ -1,0 +1,19 @@
+pipeline{
+    agent any
+    
+    parameters{}
+
+    stages{
+        stage('Package/Push chart'){
+            steps{
+                script{
+                    sh """
+                    helm package ./chart/
+                    helm push voting-app-chart-0.1.0.tgz oci://registry-1.docker.io/vikasharya000
+                    """
+                }
+            }
+        }
+    }
+
+}
