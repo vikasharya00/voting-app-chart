@@ -1,13 +1,14 @@
 pipeline{
     agent any
     
-    parameters{}
+    //parameters{}
 
     stages{
         stage('Package/Push chart'){
-            steps{
+            steps{ //need to add logic to update dependency versions
                 script{
                     sh """
+                    helm dependency update ./chart/
                     helm package ./chart/
                     helm push voting-app-chart-0.1.0.tgz oci://registry-1.docker.io/vikasharya000
                     """
