@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: Chart.lock
+  checksum: 94f28bdcdd9b6449ed9dd44d12fb0d07bede4fb47fff8c77924d62370d63a300
+version: ""
