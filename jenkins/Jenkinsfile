@@ -13,22 +13,21 @@ pipeline{
                 script{
                     if (params.voteChartVersion !=null) {
                         sh """
-                        sed -i '' -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.voteChartVersion}"/' -e '}' chart.yaml   
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.voteChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     } else if (params.workerChartVersion !=null) {
                         sh """
-                        sed -i '' -e '/helm_worker/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.workerChartVersion}"/' -e '}' chart.yaml 
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_worker/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.workerChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     } else if (params.resultChartVersion !=null) {
                         sh """
-                        sed -i '' -e '/helm_result/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.resultChartVersion}"/' -e '}' chart.yaml  
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_result/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.resultChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     }
                     else{
                         echo 'logic to abort the job'
                     }
                     sh """
-                    sed -i '' -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "9.9.9"/' -e '}' chart.yaml        
                     echo \${dockertoken} | helm registry login registry-1.docker.io -u vikasharya000 --password-stdin
                     helm dependency update ./chart/
                     helm package ./chart/
