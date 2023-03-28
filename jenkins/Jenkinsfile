@@ -1,16 +1,38 @@
 pipeline{
     agent any
     
-    //parameters{}
+    parameters{
+        string(name: 'voteChartVersion', defaultValue: '', description: 'vote helm chart version')
+        string(name: 'workerChartVersion', defaultValue: '', description: 'worker helm chart version')
+        string(name: 'resultChartVersion', defaultValue: '', description: 'result helm chart version')
+    }
 
     stages{
         stage('Package/Push chart'){
             steps{ //need to add logic to update dependency versions
                 script{
+                    if (params.voteChartVersion !=null) {
+                        sh """
+                        sed -i '' -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.voteChartVersion}"/' -e '}' chart.yaml   
+                        """
+                    } else if (params.workerChartVersion !=null) {
+                        sh """
+                        sed -i '' -e '/helm_worker/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.workerChartVersion}"/' -e '}' chart.yaml 
+                        """
+                    } else if (params.resultChartVersion !=null) {
+                        sh """
+                        sed -i '' -e '/helm_result/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.resultChartVersion}"/' -e '}' chart.yaml  
+                        """
+                    }
+                    else{
+                        echo 'logic to abort the job'
+                    }
                     sh """
+                    sed -i '' -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "9.9.9"/' -e '}' chart.yaml        
+                    echo \${dockertoken} | helm registry login registry-1.docker.io -u vikasharya000 --password-stdin
                     helm dependency update ./chart/
                     helm package ./chart/
-                    helm push voting-app-chart-0.1.0.tgz oci://registry-1.docker.io/vikasharya000
+                    helm push voting-app-chart-0.\${BUILD_NUMBER}.0.tgz oci://registry-1.docker.io/vikasharya000
                     """
                 }
             }
@@ -18,3 +40,11 @@ pipeline{
     }
 
 }
+///update-scenerio-1 [triggered by user]
+
+//update-scenerio-2 [trigger from other pipeline]
+
+
+
+// add parameter [vote, result, worker] version as user input
+//user provide [vote version] if triggered from [vote] pipeline >> update vote version in chart.yaml
