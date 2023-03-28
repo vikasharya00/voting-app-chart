@@ -1,6 +1,8 @@
 pipeline{
     agent any
-    
+    environment{
+        dockertoken=credentials("docker-token")
+    }
     parameters{
         string(name: 'voteChartVersion', defaultValue: '', description: 'vote helm chart version')
         string(name: 'workerChartVersion', defaultValue: '', description: 'worker helm chart version')
@@ -32,7 +34,7 @@ pipeline{
                     cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/type: / {' -e 'n; s/version: [0-9].[0-9].[0-9]/version: 0.${BUILD_NUMBER}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                     helm package ./chart/
                     echo \${dockertoken} | helm registry login registry-1.docker.io -u vikasharya000 --password-stdin
-                    helm push voting-app-chart-0.\${BUILD_NUMBER}.0.tgz oci://registry-1.docker.io/vikasharya000
+                    helm push voting_app_chart-0.\${BUILD_NUMBER}.0.tgz oci://registry-1.docker.io/vikasharya000
                     """
                 }
             }
