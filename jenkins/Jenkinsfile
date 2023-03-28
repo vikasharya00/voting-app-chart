@@ -13,15 +13,15 @@ pipeline{
         stage('Package/Push chart'){
             steps{ //need to add logic to update dependency versions
                 script{
-                    if (params.voteChartVersion !=null) {
+                    if (params.voteChartVersion !="") {
                         sh """
                         cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.voteChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
-                    } else if (params.workerChartVersion !=null) {
+                    } else if (params.workerChartVersion !="") {
                         sh """
                         cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_worker/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.workerChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
-                    } else if (params.resultChartVersion !=null) {
+                    } else if (params.resultChartVersion !="") {
                         sh """
                         cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_result/ {' -e 'n; s/version: "[0-9].[0-9].[0-9]"/version: "${params.resultChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
