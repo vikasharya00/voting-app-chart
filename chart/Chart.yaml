@@ -4,7 +4,6 @@ description: A Helm chart for complete voting-app to deploy on Kubernetes
 
 
 type: application
-
 version: 0.1.0
 
 
