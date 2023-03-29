@@ -20,15 +20,15 @@ pipeline{
                 script{
                     if (params.voteChartVersion !="") {
                         sh """
-                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; s/version: "[0-9].[0-9][0-9].[0-9]"/version: "${params.voteChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\10.${params.voteChartVersion}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     } else if (params.workerChartVersion !="") {
                         sh """
-                        cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_worker/ {' -e 'n; s/version: "[0-9].[0-9][0-9].[0-9]"/version: "${params.workerChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\10.${params.workerChartVersion}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     } else if (params.resultChartVersion !="") {
                         sh """
-                        cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/helm_result/ {' -e 'n; s/version: "[0-9].[0-9][0-9].[0-9]"/version: "${params.resultChartVersion}"/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\10.${params.resultChartVersion}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     }
                     else{
@@ -36,7 +36,7 @@ pipeline{
                     }
                     sh """
                     helm dependency update ./chart/
-                    cp ./chart/Chart.yaml chart.yaml.tmp && sed  -e '/type: / {' -e 'n; s/version: [0-9].[0-9][0-9].[0-9]/version: 0.${BUILD_NUMBER}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                    cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/type:/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\10.${BUILD_NUMBER}.0/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                     helm package ./chart/
                     echo \${dockertoken} | helm registry login registry-1.docker.io -u vikasharya000 --password-stdin
                     helm push voting_app_chart-0.\${BUILD_NUMBER}.0.tgz oci://registry-1.docker.io/vikasharya000
