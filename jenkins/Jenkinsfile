@@ -11,8 +11,9 @@ pipeline{
 
     stages{
         stage('Package/Push chart'){
-            sh 'git checkout main'
+            
             steps{ 
+                sh 'git checkout main'
                 script{
                     if (params.voteChartVersion !="") {
                         sh """
