@@ -45,7 +45,7 @@ pipeline{
                     sh """
                     git config --global user.email "vikash.arya@thoughtworks"
                     git config --global user.name "vikasharya00"
-                    git branch -a
+                    git checkout -b main
                     git remote set-url origin git@github.com:vikasharya00/voting-app-chart.git 
                     git add .
                     git status
