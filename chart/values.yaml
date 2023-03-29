@@ -22,8 +22,8 @@ helm_vote: {}
     #targetPort: 80
     #nodePort: 31000
 
-helm_worker:
-  image: "vikasharya000/worker:1"
+helm_worker: {}
+  #image: "vikasharya000/worker"
 
 psql: {}
 
