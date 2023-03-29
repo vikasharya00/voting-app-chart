@@ -43,6 +43,8 @@ pipeline{
             steps{
                 sshagent (credentials: ['git-ssh']) {
                     sh """
+                    git config --global user.email "vikash.arya@thoughtworks"
+                    git config --global user.name "vikash-jenkins"
                     git remote set-url origin git@github.com:vikasharya00/voting-app-chart.git 
                     git add .
                     git commit -m"update chart.yaml"
