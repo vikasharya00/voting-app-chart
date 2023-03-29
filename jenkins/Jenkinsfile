@@ -13,7 +13,10 @@ pipeline{
         stage('Package/Push chart'){
             
             steps{ 
-                sh 'git checkout main'
+                sh """
+                git branch --delete main
+                git checkout -b main
+                ""
                 script{
                     if (params.voteChartVersion !="") {
                         sh """
