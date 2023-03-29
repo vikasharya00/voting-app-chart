@@ -11,7 +11,7 @@ pipeline{
 
     stages{
         stage('Package/Push chart'){
-            steps{ //need to add logic to update dependency versions
+            steps{ 
                 script{
                     if (params.voteChartVersion !="") {
                         sh """
@@ -36,6 +36,17 @@ pipeline{
                     echo \${dockertoken} | helm registry login registry-1.docker.io -u vikasharya000 --password-stdin
                     helm push voting_app_chart-0.\${BUILD_NUMBER}.0.tgz oci://registry-1.docker.io/vikasharya000
                     """
+                }
+            }
+        }
+        stage ('deploy helm chart'){
+            steps{
+                script{
+                    kubeconfig(credentialsId: 'kubeconfig') {
+                        sh"""
+                        helm install vote oci://registry-1.docker.io/vikasharya000/voting-app-chart --version 0.${BUILD_NUMBER}.0 
+                        """
+                    }
                 }
             }
         }
