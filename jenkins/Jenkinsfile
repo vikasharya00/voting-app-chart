@@ -65,7 +65,7 @@ pipeline{
                 script{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh"""
-                        helm delete $(helm ls -aq)
+                        helm delete \$(helm ls -aq)
                         helm install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0
                         """
                     }
