@@ -14,7 +14,7 @@ pipeline{
             
             steps{ 
                 sh """
-                git branch --delete main
+                git branch -D main
                 git checkout -b main
                 """
                 script{
