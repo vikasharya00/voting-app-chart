@@ -16,7 +16,7 @@ pipeline{
                 sh """
                 git branch --delete main
                 git checkout -b main
-                ""
+                """
                 script{
                     if (params.voteChartVersion !="") {
                         sh """
