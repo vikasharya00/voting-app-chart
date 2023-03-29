@@ -1,7 +1,7 @@
-helm_result:
+helm_result: {}
   #replicas: 1
   #port: 80
-  image: "vikasharya000/result:1"
+  #image: "vikasharya000/result"
   #specify container name using containerName key
   #containerName: result
   #service:
@@ -10,9 +10,9 @@ helm_result:
     #targetPort: 80
     #nodePort: 31003
 
-helm_vote: 
+helm_vote: {}
   #replicas: 1
-  image: "vikasharya000/vote:27"
+  #image: "vikasharya000/vote"
   #specify container name using containerName key
   #containerName: vote
   #port: 80
