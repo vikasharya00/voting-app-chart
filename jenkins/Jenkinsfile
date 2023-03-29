@@ -39,6 +39,18 @@ pipeline{
                 }
             }
         }
+        stage('update git repo'){
+            steps{
+                sshagent (credentials: ['git-ssh']) {
+                    sh """
+                    git remote set-url origin git@github.com:vikasharya00/voting-app-chart.git 
+                    git add .
+                    git commit -m"update chart.yaml"
+                    git push -u origin main
+                    """
+                }
+            }
+        }
         stage ('deploy helm chart'){
             steps{
                 script{
