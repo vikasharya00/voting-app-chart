@@ -46,7 +46,7 @@ pipeline{
         }
         stage('update git repo'){
             steps{
-                sshagent (credentials: ['git-ssh']) {
+                sshagent (['git-ssh']) {
                     sh """
                     git config --global user.email "vikash.arya@thoughtworks"
                     git config --global user.name "vikasharya00"
