@@ -24,11 +24,11 @@ pipeline{
                         """
                     } else if (params.workerChartVersion !="") {
                         sh """
-                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\1${params.workerChartVersion}/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_worker/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\1${params.workerChartVersion}/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     } else if (params.resultChartVersion !="") {
                         sh """
-                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_vote/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\1${params.resultChartVersion}/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
+                        cp ./chart/Chart.yaml chart.yaml.tmp && sed -e '/helm_result/ {' -e 'n; /^\\([[:space:]]*version: \\).*/s//\\1${params.resultChartVersion}/' -e '}' < chart.yaml.tmp >./chart/Chart.yaml && rm -f chart.yaml.tmp
                         """
                     }
                     else{
