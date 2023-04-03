@@ -7,12 +7,12 @@ dependencies:
   version: 0.18.0
 - name: helm_worker
   repository: oci://registry-1.docker.io/vikasharya000
-  version: 0.8.0
+  version: 0.10.0
 - name: psql
   repository: oci://registry-1.docker.io/vikasharya000
   version: 0.1.0
 - name: redis
   repository: oci://registry-1.docker.io/vikasharya000
   version: 0.1.0
-digest: sha256:6c7efd48fd6dbcbb6a333c41960b8189a59312c554e390e45df89390dedea21a
-generated: "2023-04-03T12:29:53.825370585Z"
+digest: sha256:b2ec16c460b217c16bd3adb8876c988a476896f4be0e18bdca8f13b30b8fd9ff
+generated: "2023-04-03T13:06:47.881224708Z"
