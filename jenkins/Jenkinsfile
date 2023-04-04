@@ -11,8 +11,8 @@ pipeline{
 
     stages{
         stage('Package/Push chart'){
-            
-            steps{ 
+
+            steps{
                 sh """
                 git branch -D main
                 git checkout -b main
@@ -51,7 +51,7 @@ pipeline{
                     git config --global user.email "vikash.arya@thoughtworks"
                     git config --global user.name "vikasharya00"
                     git branch
-                    git remote set-url origin git@github.com:vikasharya00/voting-app-chart.git 
+                    git remote set-url origin git@github.com:vikasharya00/voting-app-chart.git
                     git add .
                     git status
                     git commit -m"update chart.yaml"
@@ -65,8 +65,7 @@ pipeline{
                 script{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh"""
-                        helm delete \$(helm ls -aq) || true
-                        helm install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0
+                        helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0
                         """
                     }
                 }
