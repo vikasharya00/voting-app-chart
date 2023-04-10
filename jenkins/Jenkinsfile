@@ -71,6 +71,34 @@ pipeline{
                 }
             }
         }
-    }
+        stage ("service healthcheck"){
+            steps{
+                script{
+                    def port
+                    def status
+                    kubeconfig(credentialsId: 'kubeconfig') {
+                        port=sh (script:"kubectl get svc result -o jsonpath='{.spec.ports[].nodePort}'",returnStdout: true)
 
+                        status=sh (script: "curl -s -o /dev/null -w '%{http_code}' minikube:${port}",returnStdout: true)
+                        echo "${status}"
+                    }
+                    if (status !="200"){
+                        stage:'rollback'
+                    }
+
+                }
+            }
+        }
+        stage ("rollback"){
+            steps{
+                script{
+                    kubeconfig(credentialsId: 'kubeconfig') {
+                        sh """
+                        helm rollback vote-app-chart
+                        """
+                    }
+                }
+            }
+        }
+    }
 }
