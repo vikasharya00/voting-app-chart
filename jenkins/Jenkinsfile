@@ -82,14 +82,20 @@ pipeline{
                         status=sh (script: "curl -s -o /dev/null -w '%{http_code}' minikube:${port}",returnStdout: true)
                         echo "${status}"
                     }
-                    if (status !="200"){
-                        stage:'rollback'
+                    if (status!="200"){
+                        rollback=true
+                        echo "${rollback}"
                     }
 
                 }
             }
         }
         stage ("rollback"){
+            when {
+                expression {
+                    return rollback==true;
+                }
+            }
             steps{
                 script{
                     kubeconfig(credentialsId: 'kubeconfig') {
