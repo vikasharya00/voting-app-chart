@@ -76,10 +76,14 @@ pipeline{
 
                         if (currentSlot == "blue"){
                             newSlot="green"
+                            echo "secondif"
                         }
                         else{
                             newSlot="blue"
+                            echo "second else"
                         }
+                        echo "$currentSlot"
+                        echo "$newSlot"
                         sh"""
                         helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.${newSlot}.enabled=true --reuse-values
                         helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.productionSlot=${newSlot} --reuse-values
