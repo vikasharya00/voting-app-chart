@@ -2,6 +2,7 @@ pipeline{
     agent any
     environment{
         dockertoken=credentials("docker-token")
+        rollback=false
     }
     parameters{
         string(name: 'voteChartVersion', defaultValue: '', description: 'vote helm chart version')
