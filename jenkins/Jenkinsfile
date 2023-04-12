@@ -68,7 +68,7 @@ pipeline{
                     def newSlot
                     kubeconfig(credentialsId: 'kubeconfig') {
 
-                        currentSlot=sh(script: "helm get values --all vote-app-chart | grep -i productionSlot | awk -F ' ' '{print \$2}'",returnStdout: true)
+                        currentSlot=sh(script: "helm get values vote-app-chart | grep -i productionSlot | awk -F ' ' '{print \$2}'",returnStdout: true)
                         currentSlot=currentSlot.trim()
                         if (currentSlot.length()==0){
                             currentSlot="green"
