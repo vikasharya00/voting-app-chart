@@ -120,7 +120,7 @@ pipeline{
                 script{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh """
-                        helm rollback vote-app-chart
+                        helm rollback vote-app-chart 3
                         """
                     }
                 }
