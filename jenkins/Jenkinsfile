@@ -63,10 +63,28 @@ pipeline{
         stage ('deploy helm chart'){
             steps{
                 script{
+                    def currentSlot
+                    def newSlot
                     kubeconfig(credentialsId: 'kubeconfig') {
+
+                        currentSlot=sh(script: "helm get values --all vote-app-chart | grep -i productionSlot | awk -F ' ' '{print \$2}'",returnStdout: true)
+                        currentSlot=currentSlot.trim()
+                        if (currentSlot.length()==0){
+                            currentSlot="green"
+                        }
+
+                        if (currentSlot == "blue"){
+                            newSlot="green"
+                        }
+                        else{
+                            newSlot="blue"
+                        }
                         sh"""
-                        helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0
+                        helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set helm_vote.\$newSlot.enabled=true --reuse-values
+                        helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set helm_vote.productionSlot=\$newSlot --reuse-values
                         """
+                        //helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set currentSlot.enabled=false --reuse-values
+
                     }
                 }
             }
