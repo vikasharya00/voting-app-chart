@@ -87,8 +87,9 @@ pipeline{
                         sh"""
                         helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.${newSlot}.enabled=true --reuse-values
                         helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.productionSlot=${newSlot} --reuse-values
-                        helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.${currentSlot}.enabled=false --reuse-values
                         """
+                        //helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set global.${currentSlot}.enabled=false --reuse-values
+
 
                     }
                 }
@@ -101,7 +102,7 @@ pipeline{
                     def status
                     kubeconfig(credentialsId: 'kubeconfig') {
                         port=sh (script:"kubectl get svc result -o jsonpath='{.spec.ports[].nodePort}'",returnStdout: true)
-                        status=sh (script: "curl -I minikube:31001 | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
+                        status=sh (script: "curl -I minikube:${port} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                         echo "${status}"
                     }
                     if (!status.contains("200")){
@@ -124,7 +125,7 @@ pipeline{
                 script{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh """
-                        helm rollback vote-app-chart 3
+                        helm rollback vote-app-chart 2
                         """
                     }
                 }
@@ -132,3 +133,4 @@ pipeline{
         }
     }
 }
+//local ingress
