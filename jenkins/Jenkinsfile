@@ -98,11 +98,9 @@ pipeline{
         stage ("service healthcheck"){
             steps{
                 script{
-                    def port
                     def status
                     kubeconfig(credentialsId: 'kubeconfig') {
-                        port=sh (script:"kubectl get svc result -o jsonpath='{.spec.ports[].nodePort}'",returnStdout: true)
-                        status=sh (script: "curl -I minikube:${port} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
+                        status=sh (script: "curl -I vote-app-chart/result | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                         echo "${status}"
                     }
                     if (!status.contains("200")){
@@ -133,4 +131,3 @@ pipeline{
         }
     }
 }
-//local ingress
