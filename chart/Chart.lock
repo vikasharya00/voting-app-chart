@@ -1,7 +1,7 @@
 dependencies:
 - name: helm_vote
   repository: oci://registry-1.docker.io/vikasharya000
-  version: 0.55.0
+  version: 0.56.0
 - name: helm_result
   repository: oci://registry-1.docker.io/vikasharya000
   version: 0.20.0
@@ -14,5 +14,5 @@ dependencies:
 - name: redis
   repository: oci://registry-1.docker.io/vikasharya000
   version: 0.1.0
-digest: sha256:0409c43c19205e347f2d00582c4737854200dda0dd5d2ec38a740f85bee727fd
-generated: "2023-04-18T10:54:23.836041768Z"
+digest: sha256:9accb22e32a1d03ddaf8bd966c26427a1f8225b9bf321850723c1b8a667ee9b8
+generated: "2023-04-18T10:57:19.993746769Z"
