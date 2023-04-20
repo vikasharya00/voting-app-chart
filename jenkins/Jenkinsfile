@@ -72,14 +72,20 @@ pipeline{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if (params.voteChartVersion !="") {//triggered by vote pipeline
                             currentSlot=sh(script: "kubectl get svc vote-service -o yaml | grep -i slot | awk -F ' ' '{print \$2}'",returnStdout: true)
-                            if (currentSlot.length()==0){ //select new slot based on current slot
+                            def l=currentSlot.length()
+                            echo "$currentSlot, length: $l"
+                            currentSlot=currentSlot.trim()
+                            if (currentSlot.length()==0){
+                                currentSlot="green"
+                            }
+
+                            if (currentSlot == "blue"){
+                                newSlot="green"
+                                echo "newSlot: $newSlot"
+                            }
+                            else{
                                 newSlot="blue"
-                            }else{
-                                if (currentSlot == "blue"){
-                                    newSlot="green"
-                                }else{
-                                    newSlot="blue"
-                                }
+                                echo "newSlot: $newSlot"
                             }
                             sh"""
                             voteversion=\$(echo $voteChartVersion | cut -d'.' -f2)
