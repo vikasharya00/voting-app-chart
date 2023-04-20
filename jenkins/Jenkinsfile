@@ -156,7 +156,10 @@ pipeline{
                     def revision
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if(params.rollBackToRevision==""){
-                           revision=sh (script: "helm history vote-app-chart | grep -i '0.${BUILD_NUMBER}.0' | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
+                            def build_no=env.BUILD_NUMBER as int
+                            echo "$build_no"
+                            build_no=build_no-1
+                           revision=sh (script: "helm history vote-app-chart | grep -i '0.${build_no}.0' | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
                            echo "$revision"
                            sh """
                            helm rollback vote-app-chart ${revision}
