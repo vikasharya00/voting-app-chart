@@ -136,7 +136,7 @@ pipeline{
                     if (!status.contains("200")){
                         echo "service check did not sent status code 200"
                         echo "proceeding with rollback"
-                        rollback=true
+                        //rollback=true
                         echo "${rollback}"
                     }
 
@@ -155,7 +155,7 @@ pipeline{
                     def revision
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if(params.rollBackToRevision!=""){
-                           revision=sh (script: "helm history vote-app-chart | grep -i '0.53.0' | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
+                           revision=sh (script: "helm history vote-app-chart | grep -i '0.${BUILD_NUMBER}.0' | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
                            sh """
                            helm rollback vote-app-chart ${revision}
                            """
