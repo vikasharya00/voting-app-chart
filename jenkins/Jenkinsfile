@@ -8,6 +8,8 @@ pipeline{
         string(name: 'voteChartVersion', defaultValue: '', description: 'vote helm chart version')
         string(name: 'workerChartVersion', defaultValue: '', description: 'worker helm chart version')
         string(name: 'resultChartVersion', defaultValue: '', description: 'result helm chart version')
+        //user specific revision to rollback to
+        string(name: 'rollBackToRevision', defaultValue: '', description: 'vote-app-chart revision')
     }
 
     stages{
@@ -149,10 +151,19 @@ pipeline{
             }
             steps{
                 script{
+                    def rollBackToRevision=params.rollBackToRevision
+                    def revision
                     kubeconfig(credentialsId: 'kubeconfig') {
-                        sh """
-                        helm rollback vote-app-chart 2
-                        """
+                        if(params.rollBackToRevision!=""){
+                           revision=sh (script: "helm history vote-app-chart | grep -i '0.53.0' | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
+                           sh """
+                           helm rollback vote-app-chart ${revision}
+                           """
+                        }else{
+                            sh """
+                           helm rollback vote-app-chart ${rollBackToRevision}
+                           """
+                        }
                     }
                 }
             }
