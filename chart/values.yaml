@@ -6,32 +6,9 @@ global:
   productionSlot: blue
 
 helm_result: {}
-  #replicas: 1
-  #port: 80
-  #image: "vikasharya000/result"
-  #specify container name using containerName key
-  #containerName: result
-  #service:
-    #type: NodePort
-    #port: 80
-    #targetPort: 80
-    #nodePort: 31003
-
 helm_vote: {}
-  #replicas: 1
-  #image: "vikasharya000/vote"
-  #specify container name using containerName key
-  #containerName: vote
-  #port: 80
-  #service:
-    #type: NodePort
-    #port: 80
-    #targetPort: 80
-    #nodePort: 31000
-
 
 helm_worker: {}
-  #image: "vikasharya000/worker"
 
 psql: {}
 
