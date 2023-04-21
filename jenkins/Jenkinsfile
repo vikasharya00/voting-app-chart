@@ -133,7 +133,7 @@ pipeline{
                         status=sh (script: "curl -I vote-app-chart/vote | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                         echo "${status}"
                     }
-                    rollback=true
+                    //rollback=true
                     if (!status.contains("200")){
                         echo "service check did not sent status code 200"
                         echo "proceeding with rollback"
@@ -175,9 +175,3 @@ pipeline{
         }
     }
 }
-//only config changes.
-//canary deployment
-//test blue green with updated code.
-//secret vault
-
-//what if rollback to specific version
