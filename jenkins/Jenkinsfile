@@ -9,7 +9,7 @@ pipeline{
         string(name: 'workerChartVersion', defaultValue: '', description: 'worker helm chart version')
         string(name: 'resultChartVersion', defaultValue: '', description: 'result helm chart version')
         //user specific revision to rollback to
-        string(name: 'rollBackToRevision', defaultValue: '', description: 'vote-app-chart revision')
+        string(name: 'rollBackToVersion', defaultValue: '', description: 'provide semantic vote-app-chart version to rollback to(optional field)')
     }
 
     stages{
@@ -133,7 +133,7 @@ pipeline{
                         status=sh (script: "curl -I vote-app-chart/vote | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                         echo "${status}"
                     }
-                    //rollback=true
+                    rollback=true
                     if (!status.contains("200")){
                         echo "service check did not sent status code 200"
                         echo "proceeding with rollback"
@@ -165,9 +165,10 @@ pipeline{
                            helm rollback vote-app-chart ${revision}
                            """
                         }else{
+                            revision=sh (script: "helm history vote-app-chart | grep -i ${rollBackToVersion} | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
                             sh """
-                           helm rollback vote-app-chart ${rollBackToRevision}
-                           """
+                            helm rollback vote-app-chart ${revision}
+                            """
                         }
                     }
                 }
