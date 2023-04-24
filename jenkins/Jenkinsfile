@@ -2,11 +2,9 @@ pipeline{
     agent any
     environment{
         dockertoken=credentials("docker-token")
-        rollback=false
+        currentSlot=""
+        newSlot=""
     }
-
-    def currentSlot
-    def newSlot
 
     parameters{
         string(name: 'voteChartVersion', defaultValue: '', description: 'vote helm chart version')
@@ -18,7 +16,6 @@ pipeline{
 
     stages{
         stage('Package/Push chart'){
-
             steps{
                 sh """
                 git branch -D main
