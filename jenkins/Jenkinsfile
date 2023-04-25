@@ -71,17 +71,17 @@ pipeline{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if (params.voteChartVersion !="") {//triggered by vote pipeline
                             def voteChartVersion=params.voteChartVersion
-                            currentSlot=sh(script: "kubectl get svc vote-service -o yaml | grep -i slot | awk -F ' ' '{print \$2}'",returnStdout: true)
+                            currentSlot=sh(script: "kubectl get svc vote-live -o yaml | grep -i slot | awk -F ' ' '{print \$2}'",returnStdout: true)
                             currentSlot=currentSlot.trim()
                             if (currentSlot.length()==0){
                                 currentSlot="green"
                             }
                             if (currentSlot == "blue"){
                                 newSlot="green"
-                                echo "newSlot: $newSlot"
+                                echo "newSlot: $newSlot, currentSlot: $currentSlot"
                             }else{
                                 newSlot="blue"
-                                echo "newSlot: $newSlot"
+                                echo "newSlot: $newSlot, currentSlot: $currentSlot"
                             }
                             sh"""
                             voteversion=\$(echo $voteChartVersion | cut -d'.' -f2)
@@ -97,17 +97,17 @@ pipeline{
 
                         } else if (params.resultChartVersion !="") {//triggered by result pipeline
                             def resultChartVersion=params.resultChartVersion
-                            currentSlot=sh(script: "kubectl get svc result -o yaml | grep -i slot | awk -F ' ' '{print \$2}'",returnStdout: true)
+                            currentSlot=sh(script: "kubectl get svc result-live -o yaml | grep -i slot | awk -F ' ' '{print \$2}'",returnStdout: true)
                             currentSlot=currentSlot.trim()
                             if (currentSlot.length()==0){
                                 currentSlot="green"
                             }
                             if (currentSlot == "blue"){
                                 newSlot="green"
-                                echo "newSlot: $newSlot"
+                                echo "newSlot: $newSlot, currentSlot: $currentSlot"
                             }else{
                                 newSlot="blue"
-                                echo "newSlot: $newSlot"
+                                echo "newSlot: $newSlot, currentSlot: $currentSlot"
                             }
                             sh"""
                             resultversion=\$(echo $resultChartVersion | cut -d'.' -f2)
