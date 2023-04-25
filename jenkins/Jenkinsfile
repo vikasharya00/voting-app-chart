@@ -131,6 +131,8 @@ pipeline{
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if (params.voteChartVersion !="") {//triggered by vote pipeline
                             def nodePort=sh(script: "kubectl get svc vote-test -o yaml | grep nodePort | awk -F ' ' '{print \$3}'",returnStdout: true)
+                            nodePort=nodePort.trim()
+                            echo "nodePort: $nodePort"
                             status=sh (script: "curl -I vote-app-chart:${nodePort} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                             echo "vote-test service gave status: ${status}"
                             if(!status.contains("200")){
@@ -142,6 +144,7 @@ pipeline{
 
                         }else if (params.resultChartVersion !="") {//triggered by result pipeline
                            def nodePort=sh(script: "kubectl get svc result-test -o yaml | grep nodePort | awk -F ' ' '{print \$3}'",returnStdout: true)
+                            nodePort=nodePort.trim()
                             status=sh (script: "curl -I vote-app-chart:${nodePort} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                             echo "result-test service gave status: ${status}"
                             if(!status.contains("200")){
