@@ -4,6 +4,7 @@ pipeline{
         dockertoken=credentials("docker-token")
         currentSlot=""
         newSlot=""
+        promote=true
     }
 
     parameters{
@@ -85,6 +86,7 @@ pipeline{
                             sh"""
                             voteversion=\$(echo $voteChartVersion | cut -d'.' -f2)
                             helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set helm_vote.${newSlot}.image=vikasharya000/vote:\${voteversion} --reuse-values
+                            helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set canaryWeight="50" --reuse-values
                             """
                         } else if (params.workerChartVersion !="") {//triggered by worker pipeline
                             def workerChartVersion=params.workerChartVersion
@@ -126,33 +128,64 @@ pipeline{
             steps{
                 script{
                     def status
-                    def servicePromoted=false  //service promoted from test to live
                     kubeconfig(credentialsId: 'kubeconfig') {
                         if (params.voteChartVersion !="") {//triggered by vote pipeline
-                            status=sh (script: "curl -I vote-app-chart/vote | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
-                            echo "vote service gave status: ${status}"
-                            if (status.contains("200")){
-                                servicePromoted=true
-                                echo "Promoting test to live"
+                            def nodePort=sh(script: "kubectl get svc vote-test -o yaml | grep nodePort | awk -F ' ' '{print \$3}'",returnStdout: true)
+                            status=sh (script: "curl -I vote-test:${nodePort} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
+                            echo "vote-test service gave status: ${status}"
+                            if(!status.contains("200")){
+                                promote=false //skip promote stage
                                 sh"""
-                                helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set helm_vote.productionSlot=${newSlot} --reuse-values
+                                helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set canaryWeight="0" --reuse-values
                                 """
                             }
+
                         }else if (params.resultChartVersion !="") {//triggered by result pipeline
-                            status=sh (script: "curl -I vote-app-chart/result | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
-                            echo "result service gave status: ${status}"
-                            if (status.contains("200")){
-                                servicePromoted=true
-                                echo "Promoting test to live"
+                           def nodePort=sh(script: "kubectl get svc result-test -o yaml | grep nodePort | awk -F ' ' '{print \$3}'",returnStdout: true)
+                            status=sh (script: "curl -I result-test:${nodePort} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
+                            echo "result-test service gave status: ${status}"
+                            if(!status.contains("200")){
+                                promote=false //skip promote stage
                                 sh"""
-                                helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set helm_result.productionSlot=${newSlot} --reuse-values
+                                helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set canaryWeight="0" --reuse-values
                                 """
                             }
                         }else{
                             //
                         }
-                        if(!servicePromoted){
-                            echo "No service promoted, leaving live version unchanged"
+                    }
+                }
+            }
+        }
+        //approve manually
+        stage ("promote to live"){
+            when {
+                expression {
+                    return promote==true;
+                }
+            }
+            steps{
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+                    timeout(time: 15, unit: "MINUTES") {
+	                    input message: 'Do you want to promote new version?'
+	                }
+                }
+                script{
+                    kubeconfig(credentialsId: 'kubeconfig') {
+                        if (params.voteChartVersion !="") {//triggered by vote pipeline
+                            echo "Promoting vote-test to live"
+                            //switch deployments for live,test service & route 100% to live
+                            sh"""
+                            helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0 --set canaryWeight="0" --set helm_vote.productionSlot=${newSlot} --reuse-values
+                            """
+                        }else if (params.resultChartVersion !="") {//triggered by result pipeline
+                            echo "Promoting result-test to live"
+                            //switch deployments for live,test service & route 100% to live
+                            sh"""
+                            helm upgrade vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0 --set canaryWeight="0" --set helm_result.productionSlot=${newSlot} --reuse-values
+                            """
+                        }else{
+                            //
                         }
                     }
                 }
