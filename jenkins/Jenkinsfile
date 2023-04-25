@@ -165,7 +165,7 @@ pipeline{
         stage ("promote to live"){
             when {
                 expression {
-                    return env.promote==true;
+                    return promote;
                 }
             }
             steps{
