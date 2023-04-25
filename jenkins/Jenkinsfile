@@ -157,6 +157,7 @@ pipeline{
                             //
                         }
                     }
+                    echo "promote = $promote"
                 }
             }
         }
@@ -164,7 +165,7 @@ pipeline{
         stage ("promote to live"){
             when {
                 expression {
-                    return promote==true;
+                    return env.promote==true;
                 }
             }
             steps{
