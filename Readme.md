@@ -1,4 +1,4 @@
-![https://bday2021.play-with-docker.com/images/voting-app/architecture.png]
+![](https://bday2021.play-with-docker.com/images/voting-app/architecture.png)
 - This is parent helm chart to deploy all the services under voting application in one go. These services are are vote, result, worker, PSQL db, Redis.
 - Whole project is set up to use Git-hub as SCM, Jenkins for CI/CD, Helm for creating charts and deployed on kubernetes cluster on minikube.
 - Each individual component i.e. vote, result, worker has their own jenkins build pipelines. Jenkins files for them are included in their respective repositories.
