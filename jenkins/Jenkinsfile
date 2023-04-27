@@ -135,7 +135,7 @@ pipeline{
                             echo "nodePort: $nodePort"
                             status=sh (script: "curl -I vote-app-chart:${nodePort} | grep -i HTTP | awk -F ' ' '{print \$2}'",returnStdout: true)
                             echo "vote-test service gave status: ${status}"
-                            if(!status.contains("200")){
+                            if(status.contains("200")){
                                 promote=false //skip promote stage
                                 sh"""
                                 helm upgrade --install vote-app-chart oci://registry-1.docker.io/vikasharya000/voting_app_chart --version 0.${BUILD_NUMBER}.0  --set canaryWeight="0" --reuse-values
