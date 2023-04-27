@@ -204,7 +204,7 @@ pipeline{
             steps{
                 script{
                     def revision
-                    kubeconfig(credentialsId: 'kubeconfig')
+                    kubeconfig(credentialsId: 'kubeconfig'){
                         revision=sh (script: "helm history vote-app-chart | grep -i ${rollBackToVersion} | tail -1 | awk -F ' ' '{print \$1}'",returnStdout: true)
                         sh """
                         helm rollback vote-app-chart ${revision}
