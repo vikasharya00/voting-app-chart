@@ -198,7 +198,7 @@ pipeline{
         stage ("rollback"){
             when {
                 expression {
-                    return params.rollBackToVersion!="";
+                    return params.rollBackToVersion!="" && promote!=true;
                 }
             }
             steps{
